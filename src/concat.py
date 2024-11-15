@@ -1,6 +1,8 @@
 import math
 import pathlib
 import subprocess
+from typing import Annotated
+
 import typer
 from rich.console import Console
 from rich.panel import Panel
@@ -52,16 +54,33 @@ def format_text(label: str, value: str, label_style: str) -> str:
     return f"[{label_style}]{label:<{max_label_width + 5}}[/{label_style}]{value}"
 
 
-def format_output(values: list[str]) -> str:
+def format_output(
+    values: list[str],
+    files: list[pathlib.Path],
+    verbose: bool = False,
+) -> str:
     lines = [
         format_text(label=label[0], value=value, label_style=label[1])
         for label, value in zip(labels, values)
     ]
+
+    if verbose and files:
+        lines.append("\n[yellow]Files processed:[/yellow]")
+        lines.extend(f"  {file}" for file in sorted(files))
+
     return "\n".join(lines)
 
 
 @app.command()
-def main(path: pathlib.Path) -> None:
+def main(
+    path: Annotated[
+        pathlib.Path,
+        typer.Argument(
+            help="Directory containing Python files to concatenate",
+        ),
+    ],
+    verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
+) -> None:
     files = collect_files(path=path)
 
     if not files:
@@ -81,7 +100,7 @@ def main(path: pathlib.Path) -> None:
     ]
     console.print(
         Panel.fit(
-            format_output(values),
+            format_output(values, files, verbose),
             title="🚀 Python Files concatenated",
             border_style="blue",
         )
