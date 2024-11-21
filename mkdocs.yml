@@ -1,4 +1,6 @@
 site_name: My Tools
+repo_name: julienpillaud/tools
+repo_url: https://github.com/julienpillaud/tools
 theme:
   name: material
   palette:
@@ -6,12 +8,12 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Dark mode
-      primary: green
-      accent: deep purple
+      primary: deep purple
+      accent: blue
 
     - scheme: default
       toggle:
         icon: material/weather-night
         name: Light mode
-      primary: blue
-      accent: deep orange
+      primary: deep purple
+      accent: blue
