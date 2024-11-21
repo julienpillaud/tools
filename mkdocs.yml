@@ -1,0 +1,17 @@
+site_name: My Tools
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Dark mode
+      primary: green
+      accent: deep purple
+
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Light mode
+      primary: blue
+      accent: deep orange
