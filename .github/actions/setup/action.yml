@@ -1,0 +1,20 @@
+name: Setup Python
+
+description: 'Setup environment'
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "0.5.4"
+        enable-cache: true
+
+    - name: Set up Python
+      run: uv python install
+      shell: sh
+
+    - name: Install the project
+      run: uv sync --all-extras --dev
+      shell: sh
