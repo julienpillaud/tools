@@ -18,15 +18,27 @@ labels = [
 ]
 max_label_width = max(len(label) for label, _ in labels)
 
-current_file = pathlib.Path(__file__)
-exclude_files = {".venv", "__init__.py", current_file.name}
+exclude_patterns = {
+    ".git",
+    ".idea",
+    ".venv",
+    "__pycache__",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".pytest_cache",
+    "__init__.py",
+    "uv.lock",
+}
 
 
-def collect_files(path: pathlib.Path) -> list[pathlib.Path]:
+def collect_files(
+    path: pathlib.Path,
+    exclude_patterns: set[str],
+) -> list[pathlib.Path]:
     return [
         file
-        for file in path.rglob("*.py")
-        if all(x not in file.parts for x in exclude_files)
+        for file in path.rglob("*")
+        if file.is_file() and all(x not in file.parts for x in exclude_patterns)
     ]
 
 
@@ -73,18 +85,17 @@ def format_output(
 
 @app.command()
 def main(
-    path: Annotated[
-        pathlib.Path,
-        typer.Argument(
-            help="Directory containing Python files to concatenate",
-        ),
-    ],
+    path: Annotated[pathlib.Path, typer.Argument()],
+    exclude: Annotated[list[str] | None, typer.Option("--exclude", "-e")] = None,
     verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
 ) -> None:
-    files = collect_files(path=path)
+    if exclude:
+        exclude_patterns.update(exclude)
+
+    files = collect_files(path=path, exclude_patterns=exclude_patterns)
 
     if not files:
-        console.print("[yellow]⚠️ No Python files found![/yellow]")
+        console.print("[yellow]:warning: No Python files found![/yellow]")
         raise typer.Exit(1)
 
     content = format_files(files)
@@ -101,7 +112,7 @@ def main(
     console.print(
         Panel.fit(
             format_output(values, files, verbose),
-            title="🚀 Python Files concatenated",
+            title=":rocket: Python Files concatenated",
             border_style="blue",
         )
     )
