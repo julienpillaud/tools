@@ -1,5 +1,6 @@
 import math
 import pathlib
+import platform
 import subprocess
 from typing import Annotated
 
@@ -59,7 +60,12 @@ def format_size(size_bytes: int) -> str:
 
 
 def copy_to_clipboard(content: str) -> None:
-    subprocess.run(["pbcopy"], input=content.encode("utf-8"), check=True)
+    if platform.system() == "Darwin":
+        subprocess.run(["pbcopy"], input=content.encode(), check=True)
+    elif "WSL" in platform.uname().release:
+        subprocess.run(
+            ["/mnt/c/Windows/System32/clip.exe"], input=content.encode(), check=True
+        )
 
 
 def format_text(label: str, value: str, label_style: str) -> str:
