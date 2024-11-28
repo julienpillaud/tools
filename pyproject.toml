@@ -9,8 +9,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "coverage>=7.6.7",
-    "mkdocs-material>=9.5.45",
+    "coverage>=7.6.8",
+    "mkdocs-material>=9.5.46",
     "mypy>=1.13.0",
     "pre-commit>=4.0.1",
     "pytest>=8.3.3",
