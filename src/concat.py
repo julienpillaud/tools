@@ -29,6 +29,8 @@ exclude_patterns = {
     ".pytest_cache",
     "__init__.py",
     "uv.lock",
+    ".coverage",
+    "htmlcov",
 }
 
 
