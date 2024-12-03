@@ -2,11 +2,14 @@ import math
 import pathlib
 import platform
 import subprocess
-from typing import Annotated
+from typing import Annotated, NewType
 
 import typer
 from rich.console import Console
 from rich.panel import Panel
+
+FileContent = NewType("FileContent", str)
+type FilesWithContent = list[tuple[pathlib.Path, FileContent]]
 
 app = typer.Typer()
 console = Console()
@@ -27,26 +30,33 @@ exclude_patterns = {
     ".mypy_cache",
     ".ruff_cache",
     ".pytest_cache",
+    ".env",
     "__init__.py",
     "uv.lock",
-    ".coverage",
-    "htmlcov",
 }
 
 
-def collect_files(
-    path: pathlib.Path,
-    exclude_patterns: set[str],
-) -> list[pathlib.Path]:
-    return [
-        file
-        for file in path.rglob("*")
-        if file.is_file() and all(x not in file.parts for x in exclude_patterns)
-    ]
+def read_file(file: pathlib.Path) -> FileContent | None:
+    try:
+        return FileContent(file.read_text())
+    except UnicodeDecodeError:
+        return None
 
 
-def format_files(files: list[pathlib.Path]) -> str:
-    return "\n".join(f"# {file}\n{file.read_text()}" for file in files)
+def collect_files(path: pathlib.Path, exclude_patterns: set[str]) -> FilesWithContent:
+    files = []
+    for file in path.rglob("*"):
+        if not file.is_file():
+            continue
+        if any(x in file.parts for x in exclude_patterns):
+            continue
+        if content := read_file(file=file):
+            files.append((file, content))
+    return files
+
+
+def format_files(files: FilesWithContent) -> str:
+    return "\n".join(f"# {file}\n{content}" for file, content in files)
 
 
 def format_size(size_bytes: int) -> str:
@@ -75,18 +85,16 @@ def format_text(label: str, value: str, label_style: str) -> str:
 
 
 def format_output(
-    values: list[str],
-    files: list[pathlib.Path],
-    verbose: bool = False,
+    values: list[str], files: FilesWithContent, verbose: bool = False
 ) -> str:
     lines = [
         format_text(label=label[0], value=value, label_style=label[1])
-        for label, value in zip(labels, values)
+        for label, value in zip(labels, values, strict=False)
     ]
 
     if verbose and files:
         lines.append("\n[yellow]Files processed:[/yellow]")
-        lines.extend(f"  {file}" for file in sorted(files))
+        lines.extend(f"  {file}" for file, _ in sorted(files))
 
     return "\n".join(lines)
 
@@ -119,7 +127,7 @@ def main(
     ]
     console.print(
         Panel.fit(
-            format_output(values, files, verbose),
+            format_output(values=values, files=files, verbose=verbose),
             title=":rocket: Python Files concatenated",
             border_style="blue",
         )

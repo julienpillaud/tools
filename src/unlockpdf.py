@@ -11,7 +11,7 @@ app = typer.Typer()
 def main(
     file: Annotated[pathlib.Path, typer.Argument()],
     password: Annotated[str, typer.Argument()],
-):
+) -> None:
     output = file.parent / f"{file.stem}_unlocked.pdf"
     with Pdf.open(file, password=password) as pdf:
         pdf.save(output)

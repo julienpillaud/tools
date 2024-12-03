@@ -16,3 +16,20 @@ dev = [
     "pytest>=8.3.3",
     "ruff>=0.8.0",
 ]
+
+[tool.ruff]
+output-format = "concise"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # pycodestyle
+    "F",  # Pyflakes
+    "UP",  # pyupgrade
+    "B",  # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "I",  # isort
+    "PL"  # Pylint
+]
+
+[tool.mypy]
+strict = true
