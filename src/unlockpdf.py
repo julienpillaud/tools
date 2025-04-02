@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 from typing import Annotated
 
 import typer
@@ -9,7 +9,7 @@ app = typer.Typer()
 
 @app.command()
 def main(
-    file: Annotated[pathlib.Path, typer.Argument()],
+    file: Annotated[Path, typer.Argument()],
     password: Annotated[str, typer.Argument()],
 ) -> None:
     output = file.parent / f"{file.stem}_unlocked.pdf"

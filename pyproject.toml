@@ -1,20 +1,21 @@
 [project]
 name = "tools"
 version = "0.0.1"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
-    "pikepdf>=9.4.2",
-    "typer>=0.13.1",
+    "pikepdf>=9.5",
+    "typer>=0.15",
 ]
 
 [dependency-groups]
 dev = [
-    "coverage>=7.6.8",
-    "mkdocs-material>=9.5.46",
-    "mypy>=1.13.0",
-    "pre-commit>=4.0.1",
-    "pytest>=8.3.3",
-    "ruff>=0.8.0",
+    "coverage>=7.8",
+    "mkdocs-material>=9.6",
+    "mypy>=1.15",
+    "pre-commit>=4.2",
+    "pyright>=1.1",
+    "pytest>=8.3",
+    "ruff>=0.11",
 ]
 
 [tool.ruff]
@@ -28,8 +29,22 @@ select = [
     "B",  # flake8-bugbear
     "SIM",  # flake8-simplify
     "I",  # isort
-    "PL"  # Pylint
+    "PL",  # Pylint
+    "RUF",
 ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "strict"
 
 [tool.mypy]
 strict = true
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(name)30s - %(message)s"

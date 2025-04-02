@@ -1,7 +1,7 @@
 import math
-import pathlib
 import platform
 import subprocess
+from pathlib import Path
 from typing import Annotated, NewType
 
 import typer
@@ -9,7 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 FileContent = NewType("FileContent", str)
-type FilesWithContent = list[tuple[pathlib.Path, FileContent]]
+type FilesWithContent = list[tuple[Path, FileContent]]
 
 app = typer.Typer()
 console = Console()
@@ -36,15 +36,15 @@ exclude_patterns = {
 }
 
 
-def read_file(file: pathlib.Path) -> FileContent | None:
+def read_file(file: Path) -> FileContent | None:
     try:
         return FileContent(file.read_text())
     except UnicodeDecodeError:
         return None
 
 
-def collect_files(path: pathlib.Path, exclude_patterns: set[str]) -> FilesWithContent:
-    files = []
+def collect_files(path: Path, exclude_patterns: set[str]) -> FilesWithContent:
+    files: FilesWithContent = []
     for file in path.rglob("*"):
         if not file.is_file():
             continue
@@ -101,7 +101,7 @@ def format_output(
 
 @app.command()
 def main(
-    path: Annotated[pathlib.Path, typer.Argument()],
+    path: Annotated[Path, typer.Argument()],
     exclude: Annotated[list[str] | None, typer.Option("--exclude", "-e")] = None,
     verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
 ) -> None:
